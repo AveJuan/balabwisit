@@ -1,0 +1,139 @@
+# A description of what this class does
+#
+# @summary A short summary of the purpose of this class
+#
+# @example
+#   include balabwisit
+class balabwisit {
+  $ffmpeg_package = ['ffmpeg','ffmpeg-devel']
+
+  user { 'balabwisit':
+    ensure  => 'present',
+    system  => true,
+    shell   => '/sbin/nologin',
+  }
+  file { '/var/log/balabwisit':
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/pid':
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/time':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/video':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/session':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/scripts':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/key':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/log':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/video/mp4':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/balabwisit/video/gif':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }->
+  file { '/var/log/secure':
+    ensure  => file,
+    group   => 'balabwisit',
+    mode    => '0660',
+  }->
+  exec { 'movesshd':
+    command => "/bin/mv -i /etc/ssh/sshd_config /etc/ssh/sshd_config.default",
+    onlyif  => "test ! -e /etc/ssh/sshd_config.default",
+    path    => '/usr/bin',
+  }->
+  file { '/etc/ssh/sshd_config':
+    ensure  => file,
+    source  => 'puppet:///modules/balabwisit/sshd_config',
+  }->
+  file { '/etc/profile.d/script.sh':
+    ensure  => file,
+    source  => 'puppet:///modules/balabwisit/script.sh',
+    mode    => '1750',
+  }->
+  file { '/var/log/balabwisit/log/scripts/mp4.sh':
+    ensure  => file,
+    source  => 'puppet:///modules/balabwisit/mp4.sh',
+    mode    => '0744';
+  }->
+  file { '/var/log/balabwisit/log/scripts/convert.py:
+    ensure  => file,
+    source  => 'puppet:///modules/balabwisit/convert.py',
+    mode    => '0744',
+  }->
+  service { sshd:
+    ensure => running,
+    subscribe => File["/etc/ssh/sshd_config"],
+  }
+  file { 'congif':
+    path    => '/tmp/balabwisit/video/congif',
+    source  => 'puppet:///modules/balabwisit/congif-master',
+    recurse => true,
+    owner   => 'root',
+    group   => 'balabwisit',
+    mode    => '0774',
+  }
+  file { '/tmp/nux-dextop-release-0-2.el6.nux.noarch.rpm':
+    source  => 'puppet:///modules/balabwisit/nux-dextop-release-0-2.el6.nux.noarch.rpm',
+    ensure  => file,
+  }->
+  file { '/tmp/RPM-GPG-KEY-nux.ro':
+    source  => 'puppet:///modules/balabwisit/RPM-GPG-KEY-nux.ro',
+    ensure  => file,
+  }->
+  exec { 'import':
+    command  => '/bin/rpm --import /tmp/RPM-GPG-KEY-nux.ro',
+    onlyif   => "test ! -e /etc/pki/rpm-gpg/RPM-GPG-KEY-nux.ro",
+    path     => '/usr/bin',
+  }->
+  package { 'ffmpeg-repo':
+    source   => "/tmp/nux-dextop-release-0-2.el6.nux.noarch.rpm",
+    provider => rpm,
+    ensure   => installed,
+  }->
+  package { $ffmpeg_package:
+    ensure   => installed,
+    provider => yum,
+  }
+}
+
