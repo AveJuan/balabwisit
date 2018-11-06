@@ -1,0 +1,12 @@
+#### THIS iS just a text file to tell you the purpose of the scripts and how to use/run it.
+#### If you want it to be run manually.
+#### 
+
+mp4.sh is the only script that you will run 
+
+convert.py will be called by mp4.sh on the process.
+
+
+mp4.sh main purpose is to convert the AA:BB:CC:DD:EE:FF to the ssh-key comment like "pogiian"
+convert.py purpose is to convert the session file to a video format file.
+

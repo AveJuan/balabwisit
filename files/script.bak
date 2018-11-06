@@ -1,0 +1,27 @@
+#!/bin/bash
+
+file=/tmp/balabwisit/session_$(date +%b%d-%T)-$USER.logs
+time=/tmp/balabwisit/time/time_$(date +%b%d-%T)-$USER.time
+
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+(
+  flock -x -w 10 200 || exit 1
+
+  echo "Your Session is being recorded"
+  echo "This is to protect our company's asset"
+  echo "Do what you think is right.."
+  echo "Remember, we are always watching you..."
+  script -q -t 2> $time $file
+) 200>/tmp/balabwisit/lock/.myscript$(date +%R)-$USER.lock
+
+
+if ps aux | grep $file | grep -v grep > /dev/null
+then
+        echo "running" > /dev/null
+else
+        exit
+fi
